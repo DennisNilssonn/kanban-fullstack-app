@@ -2,10 +2,6 @@
 
 Trullo är en kanban-applikation byggd med React, TypeScript och Express. Den är designad för att hjälpa användare att organisera sina uppgifter och projekt på ett visuellt sätt.
 
-## Demo
-
-https://trullo-app.netlify.app
-
 ## resonemang
 
 Jag valde att använda MongoDB istället för SQL för Trullo på grund av flera anledningar. MongoDB är en NoSQL-databas, vilket betyder att det inte använder sig av traditionella tabeller med rader och kolumner för att lagra data. Detta ger MongoDB en flexibilitet att hantera stora mängder data med varierande struktur, vilket är användbart för Trullo eftersom användarna kan ha olika typer av projekt med olika strukturer.
