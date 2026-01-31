@@ -5,7 +5,19 @@
 html,
 body,
 #root {
-  @apply box-border bg-black text-white;
+  @apply box-border min-h-full;
+}
+
+/* Light mode (default) */
+html {
+  @apply bg-slate-100 text-slate-900;
+}
+
+/* Dark mode - följer prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  html {
+    @apply bg-slate-950 text-slate-100;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -17,11 +29,23 @@ body,
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded-xl bg-sky-900 hover:cursor-grab;
+  @apply rounded-xl bg-slate-300 hover:cursor-grab;
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700;
+  }
 }
 
 .task > ::-webkit-scrollbar-thumb {
   @apply rounded-xl bg-sky-500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .task > ::-webkit-scrollbar-thumb {
+    @apply bg-sky-600;
+  }
 }
 
 @keyframes slideInFromLeft {
