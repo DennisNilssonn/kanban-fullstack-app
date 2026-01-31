@@ -10,13 +10,115 @@ body,
 
 /* Light mode (default) */
 html {
-  @apply bg-slate-100 text-slate-900;
+  @apply bg-primary text-primary;
 }
 
 /* Dark mode - följer prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
   html {
-    @apply bg-slate-950 text-slate-100;
+    @apply bg-primary text-primary;
+  }
+}
+
+/* Tailwind design tokens */
+
+@layer utilities {
+  /* Background colors */
+  .bg-primary {
+    @apply bg-slate-100 dark:bg-slate-950;
+  }
+  .bg-secondary {
+    @apply bg-slate-200 dark:bg-slate-800;
+  }
+  .bg-tertiary {
+    @apply bg-slate-100 dark:bg-slate-900;
+  }
+  .bg-elevated {
+    @apply bg-white dark:bg-slate-900;
+  }
+  .bg-card {
+    @apply bg-white dark:bg-slate-900;
+  }
+
+  /* Text colors */
+  .text-primary {
+    @apply text-slate-900 dark:text-slate-100;
+  }
+  .text-secondary {
+    @apply text-slate-600 dark:text-slate-300;
+  }
+  .text-muted {
+    @apply text-slate-500 dark:text-slate-400;
+  }
+
+  /* Border & ring colors */
+  .border-default {
+    @apply border-slate-200 dark:border-slate-700;
+  }
+  .border-secondary {
+    @apply border-slate-200 dark:border-slate-800;
+  }
+  .border-strong {
+    @apply border-slate-300 dark:border-slate-600;
+  }
+  .ring-default {
+    @apply ring-2 ring-slate-300 dark:ring-slate-600;
+  }
+  .ring-hover {
+    @apply ring-0 transition-all hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-500;
+  }
+
+  /* Input colors */
+  .input-base {
+    @apply h-12 w-full rounded-lg border-2 bg-transparent px-4 outline-none transition-colors;
+    @apply border-default text-primary placeholder:text-muted;
+    @apply focus:border-slate-400 dark:focus:border-slate-400;
+  }
+  .input-sm {
+    @apply bg-tertiary text-primary h-8 w-full rounded-lg border-2 px-2 py-1;
+    @apply ring-default focus:outline-none focus:ring-2 focus:ring-sky-500;
+  }
+
+  /* Button colors */
+  .btn-base {
+    @apply bg-tertiary text-secondary flex cursor-pointer items-center justify-between gap-2 rounded-lg border-2 px-1 py-1;
+    @apply border-strong transition-colors;
+    @apply dark:border-default hover:ring-2;
+  }
+  .btn-base:hover {
+    @apply text-sky-600 ring-sky-500 dark:text-sky-500;
+  }
+  .btn-base.btn-accent-active {
+    @apply text-sky-600 ring-2 ring-sky-500 dark:text-sky-500;
+  }
+  .btn-danger {
+    @apply hover:text-rose-600 hover:ring-rose-500 dark:hover:text-rose-500;
+  }
+
+  /* Primary button colors */
+  .btn-primary {
+    @apply h-12 w-full cursor-pointer rounded-lg border-2 font-medium transition-colors;
+    @apply border-slate-800 bg-slate-800 text-white;
+    @apply hover:border-slate-700 hover:bg-slate-700;
+    @apply dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900;
+    @apply dark:hover:border-slate-200 dark:hover:bg-slate-200;
+  }
+
+  /* Error message colors */
+  .text-error {
+    @apply text-red-600 dark:text-red-400;
+  }
+  .bg-error {
+    @apply bg-red-50 dark:bg-red-950/50;
+  }
+
+  /* Task card & column colors */
+  .card-base {
+    @apply bg-tertiary text-primary rounded-xl p-2.5;
+    @apply hover:ring-2 hover:ring-inset hover:ring-rose-500;
+  }
+  .btn-icon {
+    @apply bg-secondary text-secondary rounded p-2 opacity-60 hover:opacity-100;
   }
 }
 
