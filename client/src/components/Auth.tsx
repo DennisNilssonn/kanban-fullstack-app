@@ -17,14 +17,11 @@ const Auth: React.FC = () => {
     setError(null);
 
     try {
-      console.log(name, email, password);
-      const response = await axios.post(
+      await axios.post(
         `http://localhost:3000/api/${endpoint}`,
         isLogin ? { email, password } : { name, email, password },
         isLogin ? { withCredentials: true } : {},
       );
-
-      console.log(response.data);
 
       if (isLogin) {
         sessionStorage.setItem("isLoggedIn", "true");
@@ -34,8 +31,7 @@ const Auth: React.FC = () => {
         setIsLogin(true);
         setName("");
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
       setError(
         `${authState} failed. Please check your credentials and try again.`,
@@ -44,6 +40,7 @@ const Auth: React.FC = () => {
   };
 
   const toggleAuthState = () => {
+    setError(null);
     if (authState === "Log in") {
       setIsLogin(false);
       setAuthState("Sign up");
@@ -53,63 +50,105 @@ const Auth: React.FC = () => {
     }
   };
 
+  const inputBase =
+    "w-full h-12 px-4 rounded-lg border-2 bg-transparent outline-none transition-colors placeholder:text-slate-400 " +
+    "border-slate-200 focus:border-slate-400 dark:border-slate-600 dark:focus:border-slate-400 " +
+    "text-slate-900 dark:text-slate-100";
+
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <div className="relative flex h-[600px] w-[800px] flex-col items-center justify-start gap-20 rounded-2xl bg-columnBackgroundColor p-16">
-        <button
-          onClick={toggleAuthState}
-          className="absolute right-0 top-0 m-10 rounded-lg border-2 border-gray-300 px-3 py-1 text-gray-300 hover:border-gray-50 hover:text-gray-50"
-        >
-          {authState === "Log in" ? "Sign up" : "Log in"}
-        </button>
-        <h2 className="text-3xl">{authState}</h2>
-        <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
-          {!isLogin && (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
+      <div className="w-full max-w-md">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+          <div className="mb-8 flex items-center justify-between">
+            <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">
+              {authState}
+            </h1>
+            <button
+              onClick={toggleAuthState}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+            >
+              {authState === "Log in" ? "Sign up" : "Log in"}
+            </button>
+          </div>
+
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+            {!isLogin && (
+              <div>
+                <label
+                  htmlFor="name"
+                  className="mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-400"
+                >
+                  Namn
+                </label>
+                <input
+                  className={inputBase}
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  placeholder="Ditt namn"
+                />
+              </div>
+            )}
+
             <div>
+              <label
+                htmlFor="email"
+                className="mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-400"
+              >
+                E-post
+              </label>
               <input
-                className="min-w[350px] flex h-[60px] w-[350px] rounded-lg border-2 bg-black px-2 outline-none focus:border-rose-500"
-                type="text"
-                id="name"
-                name="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                className={inputBase}
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="Name..."
+                placeholder="din@epost.se"
               />
             </div>
-          )}
-          <div>
-            <input
-              className="min-w[350px] flex h-[60px] w-[350px] rounded-lg border-2 bg-black px-2 outline-none focus:border-rose-500"
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="Email..."
-            />
-          </div>
-          <div>
-            <input
-              className="min-w[350px] flex h-[60px] w-[350px] rounded-lg border-2 bg-black px-2 outline-none focus:border-rose-500"
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Password..."
-            />
-          </div>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <button
-            className="min-w[350px] flex h-[60px] w-[350px] cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-white bg-mainBackgroundColor p-4 ring-rose-500 hover:ring-2"
-            type="submit"
-          >
-            {authState}
-          </button>
-        </form>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-400"
+              >
+                Lösenord
+              </label>
+              <input
+                className={inputBase}
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="mt-2 h-12 w-full cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-800 font-medium text-white transition-colors hover:border-slate-700 hover:bg-slate-700 dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900 dark:hover:border-slate-200 dark:hover:bg-slate-200"
+            >
+              {authState}
+            </button>
+          </form>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          Kanban app made by Dennis
+        </p>
       </div>
     </div>
   );

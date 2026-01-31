@@ -108,20 +108,20 @@ export default function SideBar({ onHandleProjectClick }: Props) {
     <div
       className={`flex h-screen ${
         isSidebarOpen ? "w-[250px] px-7 pb-10 pt-7" : "w-14 px-3 pb-10 pt-7"
-      } flex-col justify-between bg-columnBackgroundColor transition-all duration-300 ease-in-out`}
+      } flex-col justify-between bg-slate-200 transition-all duration-300 ease-in-out dark:bg-slate-800`}
     >
       <div className="flex flex-col gap-10">
-        <div className="flex justify-end rounded-lg text-gray-300">
+        <div className="flex justify-end rounded-lg text-slate-600 dark:text-slate-300">
           {isSidebarOpen ? (
             <button
-              className="rounded-lg px-1 py-1 hover:bg-mainBackgroundColor hover:text-white hover:ring-2 hover:ring-gray-400"
+              className="rounded-lg px-1 py-1 hover:bg-slate-100 hover:text-slate-900 hover:ring-2 hover:ring-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
               onClick={() => setIsSidebarOpen(false)}
             >
               <ArrowLeft />
             </button>
           ) : (
             <button
-              className="rounded-lg px-1 py-1 hover:bg-mainBackgroundColor hover:text-white hover:ring-2 hover:ring-gray-400"
+              className="rounded-lg px-1 py-1 hover:bg-slate-100 hover:text-slate-900 hover:ring-2 hover:ring-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100"
               onClick={() => setIsSidebarOpen(true)}
             >
               <ArrowRight />
@@ -134,7 +134,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
               <div className="animate-slideInFromLeft flex flex-col gap-4">
                 <button
                   onClick={() => setIsModalOpen(!isModalOpen)}
-                  className="flex cursor-pointer items-center justify-between rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-1 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2"
+                  className="flex cursor-pointer items-center justify-between rounded-lg border-2 border-slate-300 bg-slate-100 px-1 py-1 text-slate-600 ring-sky-500 hover:text-sky-600 hover:ring-2 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-sky-500"
                 >
                   New Project
                   <Plus />
@@ -163,9 +163,9 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                             handleUpdateProjectName(project._id, inputText);
                             setEditMode(null);
                           }}
-                          className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-2 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2 ${
+                          className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-slate-300 bg-slate-100 px-2 py-1 text-slate-600 ring-sky-500 hover:text-sky-600 hover:ring-2 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-sky-500 ${
                             activeProjectId === project._id
-                              ? "text-sky-500 ring-2 ring-sky-500"
+                              ? "text-sky-600 ring-2 ring-sky-500 dark:text-sky-500"
                               : ""
                           }`}
                         />
@@ -177,9 +177,9 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                             setActiveProjectId(project._id);
                           }}
                           onDoubleClick={() => setEditMode(project._id)}
-                          className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-2 py-1 text-gray-300 ring-sky-500 hover:text-sky-500 hover:ring-2 ${
+                          className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border-2 border-slate-300 bg-slate-100 px-2 py-1 text-slate-600 ring-sky-500 hover:text-sky-600 hover:ring-2 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-sky-500 ${
                             activeProjectId === project._id
-                              ? "text-sky-500 ring-2 ring-sky-500"
+                              ? "text-sky-600 ring-2 ring-sky-500 dark:text-sky-500"
                               : ""
                           }`}
                         >
@@ -190,7 +190,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                       activeProjectId === project._id ? (
                         <button
                           onClick={() => deleteProject(project._id)}
-                          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-1 py-1 text-gray-300 ring-rose-500 hover:text-rose-500 hover:ring-2"
+                          className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-slate-300 bg-slate-100 px-1 py-1 text-slate-600 ring-rose-500 hover:text-rose-600 hover:ring-2 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-rose-500"
                         >
                           <Trash2 />
                         </button>
@@ -208,13 +208,13 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                       setIsModalOpen(false);
                       setInputText("");
                     }}
-                    className="inline-flex cursor-pointer rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-0 py-0 text-gray-300 ring-rose-500 hover:text-rose-500 hover:ring-2"
+                    className="inline-flex cursor-pointer rounded-lg border-2 border-slate-300 bg-slate-100 px-0 py-0 text-slate-600 ring-rose-500 hover:text-rose-600 hover:ring-2 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-rose-500"
                   >
                     <X />
                   </button>
                 </div>
                 <input
-                  className="h-8 w-full rounded-lg bg-mainBackgroundColor px-2 py-1 ring-2 ring-sky-700 focus:outline-none focus:ring-sky-500"
+                  className="h-8 w-full rounded-lg bg-slate-100 px-2 py-1 text-slate-900 ring-2 ring-slate-300 focus:outline-none focus:ring-sky-500 dark:bg-slate-900 dark:text-slate-100 dark:ring-slate-600"
                   type="text"
                   placeholder="Enter project name..."
                   value={inputText}
@@ -222,7 +222,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
                 />
                 {inputText.length > 0 && (
                   <button
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-2 py-1 text-gray-300 ring-2 ring-sky-700 hover:text-sky-500 hover:ring-sky-500"
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-slate-300 bg-slate-100 px-2 py-1 text-slate-600 ring-2 ring-slate-300 hover:text-sky-600 hover:ring-sky-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-600 dark:hover:text-sky-500"
                     onClick={handleNewProjectSubmit}
                   >
                     Submit
@@ -234,7 +234,7 @@ export default function SideBar({ onHandleProjectClick }: Props) {
         )}
       </div>
       <div
-        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-columnBackgroundColor bg-mainBackgroundColor px-1 py-1 text-gray-300 ring-rose-500 hover:text-rose-500 hover:ring-2"
+        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-slate-300 bg-slate-100 px-1 py-1 text-slate-600 ring-rose-500 hover:text-rose-600 hover:ring-2 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-rose-500"
         onClick={signOut}
       >
         {isSidebarOpen ? "logout" : ""}
