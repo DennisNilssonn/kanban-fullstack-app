@@ -49,7 +49,7 @@ export default function TaskCard({ task, deleteTask, updateTask }: Props) {
   if (isDragging) {
     return (
       <div
-        className="task relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl border-2 border-rose-500 bg-slate-100 p-2.5 text-left opacity-30 dark:bg-slate-900"
+        className="task bg-tertiary relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl border-2 border-rose-500 p-2.5 text-left opacity-30"
         ref={setNodeRef}
         style={style}
       />
@@ -59,14 +59,14 @@ export default function TaskCard({ task, deleteTask, updateTask }: Props) {
   if (editMode) {
     return (
       <div
-        className="relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl bg-slate-100 p-2.5 text-left hover:ring-2 hover:ring-inset hover:ring-rose-500 dark:bg-slate-900"
+        className="card-base relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl text-left"
         ref={setNodeRef}
         style={style}
         {...attributes}
         {...listeners}
       >
         <textarea
-          className="h-[90%] w-full resize-none rounded border-none bg-transparent text-slate-900 focus:outline-none dark:text-slate-100"
+          className="text-primary h-[90%] w-full resize-none rounded border-none bg-transparent focus:outline-none"
           value={localContent}
           autoFocus
           placeholder="Enter task content..."
@@ -87,7 +87,7 @@ export default function TaskCard({ task, deleteTask, updateTask }: Props) {
 
   return (
     <div
-      className="task relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl bg-slate-100 p-2.5 text-left text-slate-900 hover:ring-2 hover:ring-inset hover:ring-rose-500 dark:bg-slate-900 dark:text-slate-100"
+      className="task card-base relative flex h-[100px] min-h-[100px] cursor-grab items-center text-left"
       ref={setNodeRef}
       style={style}
       {...attributes}
@@ -100,14 +100,12 @@ export default function TaskCard({ task, deleteTask, updateTask }: Props) {
         {task.content ? (
           task.content
         ) : (
-          <p className="text-slate-500 dark:text-slate-400">
-            Enter task content...
-          </p>
+          <p className="text-muted">Enter task content...</p>
         )}
       </div>
       {mouseIsOver && (
         <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 rounded bg-slate-200 p-2 text-slate-700 opacity-60 hover:opacity-100 dark:bg-slate-800 dark:text-slate-200"
+          className="btn-icon absolute right-4 top-1/2 -translate-y-1/2"
           onClick={() => {
             deleteTask(task._id);
           }}

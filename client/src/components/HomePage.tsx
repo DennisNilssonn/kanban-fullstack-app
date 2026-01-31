@@ -11,7 +11,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-100 dark:bg-slate-950">
+    <div className="bg-primary flex min-h-screen">
       <SideBar onHandleProjectClick={handleProjectClick} />
       <KanbanBoard activeProjectId={activeProjectId} />
     </div>

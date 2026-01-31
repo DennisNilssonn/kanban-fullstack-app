@@ -50,22 +50,15 @@ const Auth: React.FC = () => {
     }
   };
 
-  const inputBase =
-    "w-full h-12 px-4 rounded-lg border-2 bg-transparent outline-none transition-colors placeholder:text-slate-400 " +
-    "border-slate-200 focus:border-slate-400 dark:border-slate-600 dark:focus:border-slate-400 " +
-    "text-slate-900 dark:text-slate-100";
-
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
+    <div className="bg-primary flex min-h-screen flex-col items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+        <div className="border-default bg-card rounded-2xl border p-8 shadow-lg">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">
-              {authState}
-            </h1>
+            <h1 className="text-primary text-2xl font-semibold">{authState}</h1>
             <button
               onClick={toggleAuthState}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+              className="text-secondary hover:bg-tertiary hover:text-primary rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
               {authState === "Log in" ? "Sign up" : "Log in"}
             </button>
@@ -76,12 +69,12 @@ const Auth: React.FC = () => {
               <div>
                 <label
                   htmlFor="name"
-                  className="mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-400"
+                  className="text-secondary mb-1.5 block text-sm font-medium"
                 >
                   Namn
                 </label>
                 <input
-                  className={inputBase}
+                  className="input-base"
                   type="text"
                   id="name"
                   name="name"
@@ -96,12 +89,12 @@ const Auth: React.FC = () => {
             <div>
               <label
                 htmlFor="email"
-                className="mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-400"
+                className="text-secondary mb-1.5 block text-sm font-medium"
               >
                 E-post
               </label>
               <input
-                className={inputBase}
+                className="input-base"
                 type="email"
                 id="email"
                 name="email"
@@ -115,12 +108,12 @@ const Auth: React.FC = () => {
             <div>
               <label
                 htmlFor="password"
-                className="mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-400"
+                className="text-secondary mb-1.5 block text-sm font-medium"
               >
                 Lösenord
               </label>
               <input
-                className={inputBase}
+                className="input-base"
                 type="password"
                 id="password"
                 name="password"
@@ -132,21 +125,18 @@ const Auth: React.FC = () => {
             </div>
 
             {error && (
-              <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+              <p className="bg-error text-error rounded-lg px-4 py-3 text-sm">
                 {error}
               </p>
             )}
 
-            <button
-              type="submit"
-              className="mt-2 h-12 w-full cursor-pointer rounded-lg border-2 border-slate-800 bg-slate-800 font-medium text-white transition-colors hover:border-slate-700 hover:bg-slate-700 dark:border-slate-100 dark:bg-slate-100 dark:text-slate-900 dark:hover:border-slate-200 dark:hover:bg-slate-200"
-            >
+            <button type="submit" className="btn-primary mt-2">
               {authState}
             </button>
           </form>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-muted mt-6 text-center text-sm">
           Kanban app made by Dennis
         </p>
       </div>
