@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { ArrowRight, ArrowLeft, LogOut, Plus, Trash2, X } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  LogOut,
+  Plus,
+  Trash2,
+  LayoutGrid,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-//Types
 import { Project, Id } from "../types/types";
 
 type Props = {
@@ -14,27 +20,39 @@ export default function SideBar({ onHandleProjectClick }: Props) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<Id | null>(null);
-  const [hoveredProjectId, setHoveredProjectId] = useState<Id | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [inputText, setInputText] = useState<string>("");
+  const [isAddingProject, setIsAddingProject] = useState(false);
+  const [newProjectName, setNewProjectName] = useState("");
   const [editMode, setEditMode] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
+  useEffect(() => {
+    if (isAddingProject) {
+      inputRef.current?.focus();
+    }
+  }, [isAddingProject]);
+
+  useEffect(() => {
+    if (editMode) {
+      editInputRef.current?.focus();
+      editInputRef.current?.select();
+    }
+  }, [editMode]);
+
   const fetchProjects = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/api/projects`, {
         withCredentials: true,
       });
-      const userData = response.data.data;
-
-      setProjects(userData);
-    } catch (error) {
+      setProjects(response.data.data);
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
-      console.error("Error fetching tasks:", error);
       window.location.reload();
     }
   };
@@ -44,202 +62,225 @@ export default function SideBar({ onHandleProjectClick }: Props) {
       await axios.post(
         `http://localhost:3000/api/logout`,
         {},
-        {
-          withCredentials: true,
-        },
+        { withCredentials: true },
       );
       sessionStorage.removeItem("isLoggedIn");
       navigate("/");
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
-      console.error(error);
       window.location.reload();
     }
   };
 
-  const handleNewProjectSubmit = async () => {
+  const createProject = async () => {
+    const name = newProjectName.trim();
+    if (!name) {
+      setIsAddingProject(false);
+      setNewProjectName("");
+      return;
+    }
     try {
       await axios.post(
         `http://localhost:3000/api/projects`,
-        { name: inputText },
+        { name },
         { withCredentials: true },
       );
-      setInputText("");
-      setIsModalOpen(false);
+      setNewProjectName("");
+      setIsAddingProject(false);
       fetchProjects();
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
-      console.error("Error creating project:", error);
       window.location.reload();
     }
   };
 
-  const deleteProject = async (id: Id) => {
+  const deleteProject = async (e: React.MouseEvent, id: Id) => {
+    e.stopPropagation();
     try {
       await axios.delete(`http://localhost:3000/api/projects/${id}`, {
         withCredentials: true,
       });
+      if (activeProjectId === id) {
+        onHandleProjectClick(null);
+        setActiveProjectId(null);
+      }
       fetchProjects();
-      onHandleProjectClick(null);
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
-      console.error("Error deleting project:", error);
       window.location.reload();
     }
   };
 
-  const handleUpdateProjectName = async (id: string, name: string) => {
+  const updateProjectName = async (id: string) => {
+    const name = editValue.trim();
+    if (!name || name === projects.find((p) => p._id === id)?.name) {
+      setEditMode(null);
+      setEditValue("");
+      return;
+    }
     try {
       await axios.patch(
         `http://localhost:3000/api/projects/${id}`,
         { name },
         { withCredentials: true },
       );
-      setInputText("");
+      setEditMode(null);
+      setEditValue("");
       fetchProjects();
-    } catch (error) {
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
-      console.error("Error updating project name:", error);
       window.location.reload();
     }
   };
 
+  const handleProjectClick = (id: Id) => {
+    onHandleProjectClick(id);
+    setActiveProjectId(id);
+  };
+
+  const startEdit = (project: Project) => {
+    setEditMode(project._id);
+    setEditValue(project.name);
+  };
+
   return (
-    <div
-      className={`flex h-screen ${
-        isSidebarOpen ? "w-[250px] px-7 pb-10 pt-7" : "w-14 px-3 pb-10 pt-7"
-      } bg-secondary flex-col justify-between transition-all duration-300 ease-in-out`}
+    <aside
+      className={`border-default bg-secondary flex h-full shrink-0 flex-col border-r transition-all duration-300 ease-out ${
+        isSidebarOpen ? "w-64" : "w-16"
+      }`}
     >
-      <div className="flex flex-col gap-10">
-        <div className="text-secondary flex justify-end rounded-lg">
-          {isSidebarOpen ? (
-            <button
-              className="hover:bg-tertiary hover:text-primary ring-hover rounded-lg px-1 py-1"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <ArrowLeft />
-            </button>
-          ) : (
-            <button
-              className="hover:bg-tertiary hover:text-primary ring-hover rounded-lg px-1 py-1"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <ArrowRight />
-            </button>
-          )}
-        </div>
-        {isSidebarOpen && (
+      <div className="border-default flex min-h-[56px] items-center justify-between border-b px-3">
+        {isSidebarOpen ? (
           <>
-            {!isModalOpen ? (
-              <div className="animate-slideInFromLeft flex flex-col gap-4">
-                <button
-                  onClick={() => setIsModalOpen(!isModalOpen)}
-                  className="btn-base w-full"
-                >
-                  New Project
-                  <Plus />
-                </button>
-                {projects &&
-                  projects.map((project) => (
-                    <div
-                      key={project._id}
-                      className="flex items-center justify-between gap-2"
-                      onMouseEnter={() => setHoveredProjectId(project._id)}
-                      onMouseLeave={() => setHoveredProjectId(null)}
-                    >
-                      {editMode === project._id ? (
-                        <input
-                          autoFocus
-                          type="text"
-                          value={inputText}
-                          onChange={(e) => setInputText(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              handleUpdateProjectName(project._id, inputText);
-                              setEditMode(null);
-                            }
-                          }}
-                          onBlur={() => {
-                            handleUpdateProjectName(project._id, inputText);
-                            setEditMode(null);
-                          }}
-                          className={`btn-base w-full px-2 ${
-                            activeProjectId === project._id
-                              ? "btn-accent-active"
-                              : ""
-                          }`}
-                        />
-                      ) : (
-                        <button
-                          key={project._id}
-                          onClick={() => {
-                            onHandleProjectClick(project._id);
-                            setActiveProjectId(project._id);
-                          }}
-                          onDoubleClick={() => setEditMode(project._id)}
-                          className={`btn-base w-full px-2 ${
-                            activeProjectId === project._id
-                              ? "btn-accent-active"
-                              : ""
-                          }`}
-                        >
-                          {project.name}
-                        </button>
-                      )}
-                      {hoveredProjectId === project._id ||
-                      activeProjectId === project._id ? (
-                        <button
-                          onClick={() => deleteProject(project._id)}
-                          className="btn-base btn-danger justify-center px-1"
-                        >
-                          <Trash2 />
-                        </button>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="animate-slideInFromLeft flex flex-col gap-4">
-                <div>
-                  <button
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setInputText("");
-                    }}
-                    className="btn-base btn-danger inline-flex px-0 py-0"
-                  >
-                    <X />
-                  </button>
-                </div>
-                <input
-                  className="input-sm"
-                  type="text"
-                  placeholder="Enter project name..."
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                />
-                {inputText.length > 0 && (
-                  <button
-                    className="btn-base w-full justify-center"
-                    onClick={handleNewProjectSubmit}
-                  >
-                    Submit
-                  </button>
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <LayoutGrid className="text-secondary h-5 w-5" />
+              <span className="text-primary font-semibold">Projects</span>
+            </div>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="text-secondary hover:bg-tertiary hover:text-primary rounded-md p-1.5 transition-colors"
+              aria-label="Collapse sidebar"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
           </>
+        ) : (
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="text-secondary hover:bg-tertiary hover:text-primary flex w-full justify-center rounded-md p-1.5 transition-colors"
+            aria-label="Expand sidebar"
+          >
+            <ArrowRight className="h-5 w-5" />
+          </button>
         )}
       </div>
-      <div
-        className="btn-base btn-danger w-full justify-center"
-        onClick={signOut}
-      >
-        {isSidebarOpen ? "logout" : ""}
-        <LogOut />
+
+      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden p-3">
+        {isSidebarOpen && (
+          <>
+            {isAddingProject ? (
+              <div className="flex gap-2">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={newProjectName}
+                  onChange={(e) => setNewProjectName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") createProject();
+                    if (e.key === "Escape") {
+                      setIsAddingProject(false);
+                      setNewProjectName("");
+                    }
+                  }}
+                  onBlur={createProject}
+                  placeholder="Project name..."
+                  className="input-sm flex-1 py-2.5 text-sm"
+                />
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAddingProject(true)}
+                className="text-secondary hover:bg-tertiary hover:text-primary flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors"
+              >
+                <Plus className="h-4 w-4 shrink-0" />
+                <span className="text-sm font-medium">New project</span>
+              </button>
+            )}
+
+            <nav className="mt-2 flex flex-col gap-0.5">
+              {projects.map((project) => (
+                <div
+                  key={project._id}
+                  className={`group flex items-center gap-2 rounded-lg transition-colors ${
+                    activeProjectId === project._id
+                      ? "bg-tertiary text-primary"
+                      : "text-secondary hover:bg-tertiary/70 hover:text-primary"
+                  }`}
+                >
+                  {editMode === project._id ? (
+                    <input
+                      ref={editInputRef}
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") updateProjectName(project._id);
+                        if (e.key === "Escape") {
+                          setEditMode(null);
+                          setEditValue("");
+                        }
+                      }}
+                      onBlur={() => updateProjectName(project._id)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-primary mx-2 my-1.5 min-w-0 flex-1 rounded border-0 bg-transparent py-1.5 text-sm outline-none ring-0 focus:ring-2 focus:ring-sky-500"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => handleProjectClick(project._id)}
+                      onDoubleClick={() => startEdit(project)}
+                      className="min-w-0 flex-1 truncate px-3 py-2.5 text-left text-sm"
+                    >
+                      {project.name}
+                    </button>
+                  )}
+                  {editMode !== project._id && (
+                    <button
+                      onClick={(e) => deleteProject(e, project._id)}
+                      className="text-muted shrink-0 rounded p-1.5 opacity-0 transition-opacity hover:bg-rose-100 hover:text-rose-600 group-hover:opacity-100 dark:hover:bg-rose-950/50 dark:hover:text-rose-400"
+                      aria-label={`Delete ${project.name}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </nav>
+          </>
+        )}
+
+        {!isSidebarOpen && (
+          <button
+            onClick={() => {
+              setIsSidebarOpen(true);
+              setTimeout(() => setIsAddingProject(true), 100);
+            }}
+            className="text-secondary hover:bg-tertiary hover:text-primary mt-2 flex justify-center rounded-lg p-2"
+            aria-label="New project"
+          >
+            <Plus className="h-5 w-5" />
+          </button>
+        )}
       </div>
-    </div>
+
+      <div className="border-default border-t p-3">
+        <button
+          onClick={signOut}
+          className="text-secondary hover:bg-tertiary flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:text-rose-600 dark:hover:text-rose-500"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {isSidebarOpen && <span className="text-sm">Sign out</span>}
+        </button>
+      </div>
+    </aside>
   );
 }

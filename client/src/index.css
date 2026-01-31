@@ -5,25 +5,20 @@
 html,
 body,
 #root {
-  @apply box-border min-h-full;
+  @apply box-border min-h-full overflow-x-hidden;
 }
 
-/* Light mode (default) */
 html {
   @apply bg-primary text-primary;
 }
 
-/* Dark mode - följer prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
   html {
     @apply bg-primary text-primary;
   }
 }
 
-/* Tailwind design tokens */
-
 @layer utilities {
-  /* Background colors */
   .bg-primary {
     @apply bg-slate-100 dark:bg-slate-950;
   }
@@ -40,7 +35,6 @@ html {
     @apply bg-white dark:bg-slate-900;
   }
 
-  /* Text colors */
   .text-primary {
     @apply text-slate-900 dark:text-slate-100;
   }
@@ -51,7 +45,6 @@ html {
     @apply text-slate-500 dark:text-slate-400;
   }
 
-  /* Border & ring colors */
   .border-default {
     @apply border-slate-200 dark:border-slate-700;
   }
@@ -68,7 +61,6 @@ html {
     @apply ring-0 transition-all hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-500;
   }
 
-  /* Input colors */
   .input-base {
     @apply h-12 w-full rounded-lg border-2 bg-transparent px-4 outline-none transition-colors;
     @apply border-default text-primary placeholder:text-muted;
@@ -79,7 +71,6 @@ html {
     @apply ring-default focus:outline-none focus:ring-2 focus:ring-sky-500;
   }
 
-  /* Button colors */
   .btn-base {
     @apply bg-tertiary text-secondary flex cursor-pointer items-center justify-between gap-2 rounded-lg border-2 px-1 py-1;
     @apply border-strong transition-colors;
@@ -95,7 +86,6 @@ html {
     @apply hover:text-rose-600 hover:ring-rose-500 dark:hover:text-rose-500;
   }
 
-  /* Primary button colors */
   .btn-primary {
     @apply h-12 w-full cursor-pointer rounded-lg border-2 font-medium transition-colors;
     @apply border-slate-800 bg-slate-800 text-white;
@@ -104,7 +94,6 @@ html {
     @apply dark:hover:border-slate-200 dark:hover:bg-slate-200;
   }
 
-  /* Error message colors */
   .text-error {
     @apply text-red-600 dark:text-red-400;
   }
@@ -112,7 +101,6 @@ html {
     @apply bg-red-50 dark:bg-red-950/50;
   }
 
-  /* Task card & column colors */
   .card-base {
     @apply bg-tertiary text-primary rounded-xl p-2.5;
     @apply hover:ring-2 hover:ring-inset hover:ring-rose-500;
@@ -120,6 +108,60 @@ html {
   .btn-icon {
     @apply bg-secondary text-secondary rounded p-2 opacity-60 hover:opacity-100;
   }
+}
+
+.task-card {
+  @apply border-default bg-card relative flex min-h-[72px] items-stretch gap-0 rounded-lg border p-3 text-left shadow-sm transition-shadow;
+  @apply hover:shadow-md;
+}
+
+.task-card__grip {
+  @apply text-muted hover:bg-tertiary hover:text-primary flex w-8 shrink-0 cursor-grab items-center justify-center self-stretch rounded transition-colors active:cursor-grabbing;
+  @apply -my-3 -ml-3 mr-0 border-r border-transparent;
+}
+
+.task-card__content {
+  @apply task min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-3 py-0.5;
+  max-height: 140px;
+}
+
+.task-card__text {
+  @apply text-primary whitespace-pre-wrap break-words text-sm leading-relaxed;
+}
+
+.task-card__placeholder {
+  @apply text-muted text-sm italic;
+}
+
+.task-card__actions {
+  @apply flex w-9 shrink-0 items-center justify-center self-stretch;
+  @apply -my-3 -mr-3 ml-0 border-l border-transparent;
+}
+
+.task-card__delete {
+  @apply text-muted hover:bg-error hover:text-error pointer-events-none flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md opacity-0 transition-opacity duration-150;
+}
+
+.task-card__delete--visible {
+  @apply pointer-events-auto opacity-100;
+}
+
+.task-card__delete:focus {
+  @apply pointer-events-auto opacity-100;
+}
+
+.task-card__textarea {
+  @apply text-primary placeholder:text-muted max-h-[140px] min-h-[60px] w-full flex-1 resize-none rounded border-0 bg-transparent py-1 text-sm focus:outline-none focus:ring-0;
+}
+
+.task-card--editing {
+  @apply ring-2 ring-sky-500 ring-offset-2 ring-offset-slate-100 dark:ring-offset-slate-950;
+}
+
+.task-card--dragging {
+  @apply cursor-grab opacity-50;
+  @apply bg-card border-2 border-sky-500 shadow-lg;
+  min-height: 72px;
 }
 
 ::-webkit-scrollbar {
@@ -136,6 +178,20 @@ html {
 
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700;
+  }
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  @apply rounded-xl bg-slate-300 hover:cursor-grab;
+}
+
+@media (prefers-color-scheme: dark) {
+  .overflow-x-auto::-webkit-scrollbar-thumb {
     @apply bg-slate-700;
   }
 }
@@ -162,5 +218,5 @@ html {
 }
 
 .animate-slideInFromLeft {
-  animation: slideInFromLeft 1s ease forwards; /* Justera tiden och easing som behövs */
+  animation: slideInFromLeft 1s ease forwards;
 }

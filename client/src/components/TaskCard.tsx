@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { GripVertical, Trash2 } from "lucide-react";
 
-import { Trash2 } from "lucide-react";
-
-// Types
 import { Id, Task } from "../types/types";
+
 interface Props {
   task: Task;
   deleteTask: (id: Id) => void;
@@ -13,9 +12,10 @@ interface Props {
 }
 
 export default function TaskCard({ task, deleteTask, updateTask }: Props) {
-  const [mouseIsOver, setMouseIsOver] = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [localContent, setLocalContent] = useState(task.content);
+  const [isHovered, setIsHovered] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
     setNodeRef,
@@ -26,93 +26,111 @@ export default function TaskCard({ task, deleteTask, updateTask }: Props) {
     isDragging,
   } = useSortable({
     id: task._id,
-    data: {
-      type: "Task",
-      task,
-    },
-    disabled: editMode,
+    data: { type: "Task", task },
+    disabled: isEditing,
   });
+
+  useEffect(() => {
+    setLocalContent(task.content);
+  }, [task.content]);
+
+  useEffect(() => {
+    if (isEditing) {
+      textareaRef.current?.focus();
+      textareaRef.current?.select();
+    }
+  }, [isEditing]);
 
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),
   };
 
-  const toggleEditMode = () => {
-    if (editMode) {
-      updateTask(task._id, localContent);
+  const saveAndClose = () => {
+    if (localContent.trim() !== task.content) {
+      updateTask(task._id, localContent.trim() || task.content);
     }
-    setEditMode((prev) => !prev);
-    setMouseIsOver(false);
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      saveAndClose();
+    }
+    if (e.key === "Escape") {
+      setLocalContent(task.content);
+      setIsEditing(false);
+      textareaRef.current?.blur();
+    }
   };
 
   if (isDragging) {
     return (
       <div
-        className="task bg-tertiary relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl border-2 border-rose-500 p-2.5 text-left opacity-30"
         ref={setNodeRef}
         style={style}
+        className="task-card task-card--dragging"
       />
     );
   }
 
-  if (editMode) {
+  if (isEditing) {
     return (
       <div
-        className="card-base relative flex h-[100px] min-h-[100px] cursor-grab items-center rounded-xl text-left"
         ref={setNodeRef}
         style={style}
-        {...attributes}
-        {...listeners}
+        className="task-card task-card--editing"
       >
+        <div className="task-card__grip" {...attributes} {...listeners}>
+          <GripVertical className="h-4 w-4" />
+        </div>
         <textarea
-          className="text-primary h-[90%] w-full resize-none rounded border-none bg-transparent focus:outline-none"
+          ref={textareaRef}
+          className="task-card__textarea"
           value={localContent}
-          autoFocus
-          placeholder="Enter task content..."
-          onBlur={toggleEditMode}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              toggleEditMode();
-            }
-          }}
           onChange={(e) => setLocalContent(e.target.value)}
-        >
-          {task.content}
-        </textarea>
+          onBlur={saveAndClose}
+          onKeyDown={handleKeyDown}
+          placeholder="Enter task content..."
+          rows={3}
+        />
       </div>
     );
   }
 
   return (
     <div
-      className="task card-base relative flex h-[100px] min-h-[100px] cursor-grab items-center text-left"
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      onClick={toggleEditMode}
-      onMouseEnter={() => setMouseIsOver(true)}
-      onMouseLeave={() => setMouseIsOver(false)}
+      className="task-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onDoubleClick={() => setIsEditing(true)}
     >
-      <div className="my-auto h-[90%] w-full overflow-y-auto overflow-x-hidden whitespace-pre-wrap">
+      <div className="task-card__grip" {...attributes} {...listeners}>
+        <GripVertical className="h-4 w-4" />
+      </div>
+      <div className="task-card__content">
         {task.content ? (
-          task.content
+          <p className="task-card__text">{task.content}</p>
         ) : (
-          <p className="text-muted">Enter task content...</p>
+          <p className="task-card__placeholder">Add description...</p>
         )}
       </div>
-      {mouseIsOver && (
+      <div className="task-card__actions">
         <button
-          className="btn-icon absolute right-4 top-1/2 -translate-y-1/2"
-          onClick={() => {
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
             deleteTask(task._id);
           }}
+          className={`task-card__delete ${isHovered ? "task-card__delete--visible" : ""}`}
+          aria-label="Delete task"
         >
-          <Trash2 />
+          <Trash2 className="h-4 w-4" />
         </button>
-      )}
+      </div>
     </div>
   );
 }

@@ -13,19 +13,16 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
-// Components
 import ColumnContainer from "./ColumnContainer";
 import TaskCard from "./TaskCard";
-
-// Types
 import { Column, Id, Task } from "../types/types";
 
-// Proptypes
 type Props = {
   activeProjectId: Id | null;
 };
 
 function KanbanBoard({ activeProjectId }: Props) {
+  const [projectName, setProjectName] = useState<string | null>(null);
   const [columns, setColumns] = useState<Column[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -35,10 +32,14 @@ function KanbanBoard({ activeProjectId }: Props) {
   );
 
   useEffect(() => {
+    if (!activeProjectId) {
+      setProjectName(null);
+      setColumns([]);
+      setTasks([]);
+      return;
+    }
     fetchColumns();
     fetchTasks();
-    setColumns([]);
-    setTasks([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProjectId]);
 
@@ -52,12 +53,11 @@ function KanbanBoard({ activeProjectId }: Props) {
         },
       );
 
-      const dbData = response.data.data.columns;
-
-      setColumns(dbData);
-    } catch (error) {
+      const project = response.data.data;
+      setProjectName(project.name);
+      setColumns(project.columns);
+    } catch {
       sessionStorage.removeItem("isLoggedIn");
-      console.error("Error fetching tasks:", error);
       window.location.reload();
     }
   };
@@ -80,8 +80,6 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  // Task events:
-
   const updateAllTasksToDB = async () => {
     try {
       await axios.patch(
@@ -91,10 +89,13 @@ function KanbanBoard({ activeProjectId }: Props) {
           withCredentials: true,
         },
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error) {
       sessionStorage.removeItem("isLoggedIn");
-      console.error(error.response.data.error);
+      const message =
+        axios.isAxiosError(error) && error.response?.data?.error
+          ? error.response.data.error
+          : error;
+      console.error(message);
       window.location.reload();
     }
   };
@@ -134,7 +135,7 @@ function KanbanBoard({ activeProjectId }: Props) {
       window.location.reload();
     }
   };
-  //remove isLogged in from session storage and reload the page
+
   const updateTask = async (id: Id, content: string) => {
     if (!content) return;
     try {
@@ -156,12 +157,10 @@ function KanbanBoard({ activeProjectId }: Props) {
     }
   };
 
-  // Drag And Drop Events:
-
   const onDragStart = (event: DragStartEvent) => {
     if (event.active.data.current?.type === "Task") {
       const activeTaskId = event.active.id;
-      const task = tasks.find((task) => task._id === activeTaskId) || null; // Fallback to null
+      const task = tasks.find((task) => task._id === activeTaskId) ?? null;
       setActiveTask(task);
       return;
     }
@@ -176,7 +175,6 @@ function KanbanBoard({ activeProjectId }: Props) {
 
     if (activeId === overId) return;
 
-    // Dropping a task over another task
     const isActiveTask = active.data.current?.type === "Task";
     const isOverATask = over.data.current?.type === "Task";
 
@@ -213,21 +211,29 @@ function KanbanBoard({ activeProjectId }: Props) {
     const { over } = event;
     if (!over) return;
 
-    console.log(over);
-
     updateAllTasksToDB();
   };
 
   return (
-    <div className="flex w-full items-center justify-start overflow-y-hidden overflow-x-scroll px-[40px]">
-      <DndContext
-        sensors={sensors}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        onDragOver={onDragOver}
-      >
-        <div className="flex gap-4">
-          <div className="flex gap-4">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <header className="border-default bg-secondary flex min-h-[56px] shrink-0 items-center justify-between border-b px-4 sm:px-6">
+        <h1 className="text-primary truncate text-lg font-semibold sm:text-xl">
+          {activeProjectId ? (
+            (projectName ?? "Loading...")
+          ) : (
+            <span className="text-muted">Select a project</span>
+          )}
+        </h1>
+      </header>
+
+      <div className="flex min-h-0 min-w-0 flex-1 justify-center overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6">
+        <DndContext
+          sensors={sensors}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          onDragOver={onDragOver}
+        >
+          <div className="mx-auto grid min-h-[400px] w-full max-w-7xl grid-cols-1 gap-4 pb-4 sm:grid-cols-2 lg:grid-cols-4">
             {columns.map((col) => (
               <ColumnContainer
                 key={col._id}
@@ -239,20 +245,20 @@ function KanbanBoard({ activeProjectId }: Props) {
               />
             ))}
           </div>
-        </div>
-        {createPortal(
-          <DragOverlay>
-            {activeTask && (
-              <TaskCard
-                task={activeTask}
-                updateTask={updateTask}
-                deleteTask={deleteTask}
-              />
-            )}
-          </DragOverlay>,
-          document.body,
-        )}
-      </DndContext>
+          {createPortal(
+            <DragOverlay>
+              {activeTask && (
+                <TaskCard
+                  task={activeTask}
+                  updateTask={updateTask}
+                  deleteTask={deleteTask}
+                />
+              )}
+            </DragOverlay>,
+            document.body,
+          )}
+        </DndContext>
+      </div>
     </div>
   );
 }

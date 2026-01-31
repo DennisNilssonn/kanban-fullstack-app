@@ -71,7 +71,7 @@ const Auth: React.FC = () => {
                   htmlFor="name"
                   className="text-secondary mb-1.5 block text-sm font-medium"
                 >
-                  Namn
+                  Username
                 </label>
                 <input
                   className="input-base"
@@ -81,7 +81,7 @@ const Auth: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  placeholder="Ditt namn"
+                  placeholder="Your username"
                 />
               </div>
             )}
@@ -91,7 +91,7 @@ const Auth: React.FC = () => {
                 htmlFor="email"
                 className="text-secondary mb-1.5 block text-sm font-medium"
               >
-                E-post
+                Email
               </label>
               <input
                 className="input-base"
@@ -101,7 +101,7 @@ const Auth: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="din@epost.se"
+                placeholder="you@example.com"
               />
             </div>
 
@@ -110,7 +110,7 @@ const Auth: React.FC = () => {
                 htmlFor="password"
                 className="text-secondary mb-1.5 block text-sm font-medium"
               >
-                Lösenord
+                Password
               </label>
               <input
                 className="input-base"
